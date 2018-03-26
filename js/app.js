@@ -51,9 +51,10 @@ function shuffle(array) {
     setTimeout(function () {    
         const CARDS_NUM = document.querySelectorAll('.card').length;
         const STARS_NUM = document.querySelector('.stars').children.length;
+        const MAX_MOVES = 3;
         
         const stateObj = {
-            moves   : STARS_NUM,
+            moves   : 0,
             count   : 0,
             found   : 0,
             hiddenStars: 0,
@@ -223,9 +224,9 @@ function shuffle(array) {
          */ 
         function reduceMoves () {
             
-            --stateObj.moves;
+            ++stateObj.moves;
 
-            if (!stateObj.moves) {
+            if (stateObj.moves === 3) {
                 setTimeout(function(){
 
                     alert('you lost');
@@ -256,7 +257,7 @@ function shuffle(array) {
          */
         function resetFn () {
                 // reset state obj
-                stateObj.moves = STARS_NUM;
+                stateObj.moves = 0;
                 stateObj.count = 0;
                 stateObj.found = 0;
                 stateObj.hiddenStars = 0;

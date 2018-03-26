@@ -46,6 +46,26 @@ function shuffle(array) {
     const deck = document.querySelector('.deck');
     const cardsAll = document.querySelectorAll('.card');
     const card_arr = [];
+    const timerEl = document.querySelector('#timer');
+    const timer = new Timer({
+        tick : 1,
+        ontick : function (millisec) {
+            
+            var sec = Math.round(millisec / 1000);
+            timerEl.textContent = sec;
+
+        },
+        onstart : function(millisec) {
+            console.log('timer started');
+
+            var sec = Math.round(millisec / 1000);
+            timerEl.textContent = sec;
+
+        },
+        onend  : function() {
+            timerEl.textContent = 'end';
+        }
+    });    
 
     // shuffle
     setTimeout(function () {    
@@ -113,6 +133,12 @@ function shuffle(array) {
             switch(stateObj.count) {
 
                 case 1 : 
+                        //1. start timer
+                        
+                        timer.start(50);
+
+
+                        //2.
 
                         stateObj.symbols.s1 = _this.children[0].classList[1];
 
@@ -225,9 +251,8 @@ function shuffle(array) {
             ++stateObj.moves;
 
             if (stateObj.moves === 3) {
+                
                 setTimeout(function(){
-
-                    alert('you lost');
 
                     resetFn();
                     
@@ -252,6 +277,10 @@ function shuffle(array) {
          * 7. reset values
          */
         function resetFn () {
+                // stop timer
+                timer.stop();
+                timerEl.textContent = '';
+
                 // reset state obj
                 stateObj.moves = 0;
                 stateObj.count = 0;

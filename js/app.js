@@ -46,32 +46,11 @@ function shuffle(array) {
     const deck = document.querySelector('.deck');
     const cardsAll = document.querySelectorAll('.card');
     const card_arr = [];
-    const timerEl = document.querySelector('#timer');
-    const timer = new Timer({
-        tick : 1,
-        ontick : function (millisec) {
-            
-            var sec = Math.round(millisec / 1000);
-            timerEl.textContent = sec;
-
-        },
-        onstart : function(millisec) {
-            console.log('timer started');
-
-            var sec = Math.round(millisec / 1000);
-            timerEl.textContent = sec;
-
-        },
-        onend  : function() {
-            timerEl.textContent = 'end';
-        }
-    });    
+  
 
     // shuffle
-    setTimeout(function () {    
-        const CARDS_NUM = document.querySelectorAll('.card').length;
-        const MAX_MOVES = 3;
-        
+    setTimeout(function () {  
+
         const stateObj = {
             moves   : 0,
             count   : 0,
@@ -81,8 +60,30 @@ function shuffle(array) {
                 s2  : null,
             },
         };
-            
 
+        const timer = new Timer({
+            tick : 1,
+            ontick : function (millisec) {
+                
+                var sec = Math.round(millisec / 1000);
+                timerEl.textContent = sec;
+    
+            },
+            onstart : function(millisec) {
+                console.log('timer started');
+    
+                var sec = Math.round(millisec / 1000);
+                timerEl.textContent = sec;
+    
+            },
+            onend  : function() {
+                resetFn();
+            }
+        });
+        const timerEl = document.querySelector('#timer');
+        const CARDS_NUM = document.querySelectorAll('.card').length;
+        const MAX_MOVES = 3;
+    
         const fragment = document.createDocumentFragment();
 
         // add to the array
@@ -135,7 +136,7 @@ function shuffle(array) {
                 case 1 : 
                         //1. start timer
                         
-                        timer.start(50);
+                        timer.start(20);
 
 
                         //2.
@@ -149,6 +150,8 @@ function shuffle(array) {
                         //0. 
                         stateObj.symbols.s2 = _this.children[0].classList[1];
                         
+                        // add moves
+                        addMoves();
 
                         //1. dont allow other clicks
                         removeClickListenerToCards();
@@ -165,8 +168,6 @@ function shuffle(array) {
                                     card.classList.remove('show');
                                 }
                                 console.log(stateObj)
-
-                                reduceMoves();
 
                                 setClickListenerToCards();
 
@@ -244,21 +245,10 @@ function shuffle(array) {
 
 
         /**
-         * 5. reduceMoves
+         * 5. addMoves
          */ 
-        function reduceMoves () {
-            
+        function addMoves () {
             ++stateObj.moves;
-
-            if (stateObj.moves === 3) {
-                
-                setTimeout(function(){
-
-                    resetFn();
-                    
-                }, 10);
-            }
-
             // refactor
             let num = stateObj.moves;
             const moves = document.querySelector('.moves').textContent = `${num}`;

@@ -50,14 +50,12 @@ function shuffle(array) {
     // shuffle
     setTimeout(function () {    
         const CARDS_NUM = document.querySelectorAll('.card').length;
-        const STARS_NUM = document.querySelector('.stars').children.length;
         const MAX_MOVES = 3;
         
         const stateObj = {
             moves   : 0,
             count   : 0,
             found   : 0,
-            hiddenStars: 0,
             symbols : {
                 s1  : null,
                 s2  : null,
@@ -239,8 +237,6 @@ function shuffle(array) {
             // refactor
             let num = stateObj.moves;
             const moves = document.querySelector('.moves').textContent = `${num}`;
-            const stars = document.querySelector('.stars').children[stateObj.hiddenStars].style="visibility: hidden";
-            ++stateObj.hiddenStars;
         };
 
 
@@ -260,7 +256,6 @@ function shuffle(array) {
                 stateObj.moves = 0;
                 stateObj.count = 0;
                 stateObj.found = 0;
-                stateObj.hiddenStars = 0;
                 stateObj.symbols = {
                     s1  : null,
                     s2  : null,
@@ -268,12 +263,7 @@ function shuffle(array) {
 
                 //refactor
                 const moves = document.querySelector('.moves').textContent = `${stateObj.moves}`;
-                const stars = document.querySelector('.stars').children;
                 const allCards = document.querySelectorAll('.card');
-                
-                for(star of stars) {
-                    star.style = "visibility: visible";
-                }
 
                 for(card of allCards) {
                     card.classList.remove('open');

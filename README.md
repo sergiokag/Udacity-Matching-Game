@@ -3,6 +3,7 @@
 ## Table of Contents
 
 * [Instructions](#instructions)
+* [Libraries](#libraries)
 * [Contributing](#contributing)
 
 ## Instructions
@@ -19,6 +20,14 @@ press the green button "Clone or download" and select the Download Zip option, d
 After that, find the index.html file and open it an browser.
 
 And the Memory Game is loaded. 
+
+## Libraries
+
+This project uses the following libraries:
+
+* timer.js for the timer (https://github.com/husa/timer.js/) 
+* tingle.js for the modal popup (https://github.com/husa/timer.js/)
+* animate.css for the animations (https://github.com/husa/timer.js/)
 
 ## Contributing
 

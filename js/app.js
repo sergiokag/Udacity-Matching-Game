@@ -46,7 +46,7 @@ function shuffle(array) {
     const deck = document.querySelector('.deck');
     const cardsAll = document.querySelectorAll('.card');
     const card_arr = [];
-  
+    const stars = document.querySelectorAll('.stars > li');
 
     // shuffle
     setTimeout(function () {  
@@ -55,6 +55,7 @@ function shuffle(array) {
             moves   : 0,
             count   : 0,
             found   : 0,
+            rating  : 3,
             symbols : {
                 s1  : null,
                 s2  : null,
@@ -67,6 +68,7 @@ function shuffle(array) {
                 
                 var sec = Math.round(millisec / 1000);
                 timerEl.textContent = sec;
+                
     
             },
             onstart : function(millisec) {
@@ -80,11 +82,49 @@ function shuffle(array) {
                 resetFn();
             }
         });
+
+        let timeText = '';
+
+        const modal = new tingle.modal({
+            footer: true,
+            stickyFooter: true,
+            closeMethods: ['overlay', 'button', 'escape'],
+            closeLabel: "Close",
+            cssClass: ['custom-class-1', 'custom-class-2'],
+            onOpen: function() {
+
+                timer.stop();
+                timeText = document.querySelector('#timer').innerText;
+
+                modal.setContent(`<h1>Congratulations! You Won!</h1><p>With ${ stateObj.moves } Moves</p><p>and Stars: ${ stateObj.rating }<p/><p>Time: ${ timeText }</p>`);
+
+                // add a button
+                modal.addFooterBtn('Play Again', 'tingle-btn tingle-btn--primary', function() {
+                    // here goes some logic
+                    resetFn();
+                    modal.close();
+                });
+
+                console.log('modal open', timeText);
+            },
+            onClose: function() {
+                resetFn();
+                console.log('modal closed');
+            },
+            beforeClose: function() {
+                // here's goes some logic
+                // e.g. save content before closing the modal
+                return true; // close the modal
+                return false; // nothing happens
+            }
+        });
+
         const timerEl = document.querySelector('#timer');
         const CARDS_NUM = document.querySelectorAll('.card').length;
         const MAX_MOVES = 3;
     
         const fragment = document.createDocumentFragment();
+
 
         // add to the array
         for (c of cardsAll) {
@@ -105,8 +145,6 @@ function shuffle(array) {
 
         deck.innerHTML = '';
         deck.appendChild(fragment);
-
-
 
 
         /**
@@ -136,12 +174,15 @@ function shuffle(array) {
                 case 1 : 
                         //1. start timer
                         
-                        timer.start(20);
+                        timer.start(500);
 
 
                         //2.
 
                         stateObj.symbols.s1 = _this.children[0].classList[1];
+
+                        _this.classList.toggle('selected');
+                        _this.classList.toggle('animated');
 
                         break;
 
@@ -149,6 +190,9 @@ function shuffle(array) {
                 case 2 : 
                         //0. 
                         stateObj.symbols.s2 = _this.children[0].classList[1];
+
+                        _this.classList.toggle('selected');
+                        _this.classList.toggle('animated');
                         
                         // add moves
                         addMoves();
@@ -158,36 +202,56 @@ function shuffle(array) {
 
                         //2. check if they DONT have the same symbol
                         if ( stateObj.symbols.s1 !== stateObj.symbols.s2 ) {
+
+                            const _selectedCards = document.querySelectorAll('li.selected');
                             
+                            for ( sCard of _selectedCards ) {
+                                sCard.classList.toggle('not-match');
+                                sCard.classList.toggle('shake');
+                            }
 
                             setTimeout(function () {
-                                const cards = document.querySelectorAll('li.open.show');
 
-                                for ( card of cards) {
-                                    card.classList.remove('open');
-                                    card.classList.remove('show');
-                                }
+                                for ( sCard of _selectedCards ) {
+                                    sCard.classList.remove('open');
+                                    sCard.classList.remove('show');
+                                    sCard.classList.remove('selected');
+                                    sCard.classList.remove('animated');
+                                    sCard.classList.remove('not-match');
+                                    sCard.classList.remove('shake');
+                                }                                
                                 console.log(stateObj)
 
                                 setClickListenerToCards();
 
                             }, 1300);
 
+
+
                         }
                         else {
+
+                            
 
                             setTimeout(function () {
                                 const cards = document.querySelectorAll('li.open');
 
                                 for ( card of cards) {
                                     card.classList.add('match');
+                                    card.classList.add('animated');
+                                    card.classList.add('rubberBand');
+                                    card.classList.remove('selected');
+                                    
                                 }
 
                                 stateObj.found += 2;
                                 console.log(stateObj);
                                 
                                 if( stateObj.found ===  CARDS_NUM ) {
-                                    alert('You wanna!!!!!');
+                                    
+                                    // open modal
+                                    openModal();
+
                                     return;
                                 }
 
@@ -248,7 +312,20 @@ function shuffle(array) {
          * 5. addMoves
          */ 
         function addMoves () {
+        
             ++stateObj.moves;
+
+            if (stateObj.moves === 17 ) {
+                --stateObj.rating;
+                document.querySelectorAll('.stars li')[2].innerHTML = `<i class="fa fa-star-o"></i>`;
+            }
+
+
+            if (stateObj.moves === 25 ) {
+                --stateObj.rating;
+                document.querySelectorAll('.stars li')[1].innerHTML = `<i class="fa fa-star-o"></i>`;
+            }            
+
             // refactor
             let num = stateObj.moves;
             const moves = document.querySelector('.moves').textContent = `${num}`;
@@ -267,14 +344,16 @@ function shuffle(array) {
          * 7. reset values
          */
         function resetFn () {
+
                 // stop timer
                 timer.stop();
                 timerEl.textContent = '';
 
                 // reset state obj
-                stateObj.moves = 0;
-                stateObj.count = 0;
-                stateObj.found = 0;
+                stateObj.moves   = 0;
+                stateObj.count   = 0;
+                stateObj.found   = 0;
+                stateObj.rating  = 3;
                 stateObj.symbols = {
                     s1  : null,
                     s2  : null,
@@ -290,15 +369,25 @@ function shuffle(array) {
                     card.classList.remove('match');
                 }
 
+                for(star of stars) {
+                    star.innerHTML='<i class="fa fa-star"></i>';
+                }
+
                 initApp();
         };
 
 
+        /**
+         * 8. Modal
+         */
+        function openModal () {
+            // open modal
+            modal.open();
+        };
 
 
         setClickListenerToCards();
         resetGame();
-
 
 
     }, 0);

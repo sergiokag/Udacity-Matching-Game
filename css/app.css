@@ -83,6 +83,12 @@ h1 {
     pointer-events: none;
 }
 
+.deck .card.not-match {
+    background-color: crimson;
+    font-size: 33px;
+    cursor: default;
+}
+
 /*
  * Styles for the Score Panel
  */

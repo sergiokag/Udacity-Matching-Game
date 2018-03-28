@@ -52,38 +52,22 @@ function shuffle(array) {
     setTimeout(function () {  
 
         const stateObj = {
-            moves   : 0,
-            count   : 0,
-            found   : 0,
-            rating  : 3,
-            symbols : {
+            moves          : 0,
+            count          : 0,
+            found          : 0,
+            rating         : 3,
+            timerTriggered : 0,
+            symbols        : {
                 s1  : null,
                 s2  : null,
             },
         };
 
-        const timer = new Timer({
-            tick : 1,
-            ontick : function (millisec) {
-                
-                var sec = Math.round(millisec / 1000);
-                timerEl.textContent = sec;
-                
-    
-            },
-            onstart : function(millisec) {
-                console.log('timer started');
-    
-                var sec = Math.round(millisec / 1000);
-                timerEl.textContent = sec;
-    
-            },
-            onend  : function() {
-                resetFn();
-            }
-        });
 
-        let timeText = '';
+        
+        const _secondData = +document.querySelector(".timer").dataset.secondsLeft;
+        let timeStart = '' + moment.utc(_secondData*1000).format('HH:mm:ss') + '';
+        let timeEnd   = '';
 
         const modal = new tingle.modal({
             footer: true,
@@ -93,10 +77,16 @@ function shuffle(array) {
             cssClass: ['custom-class-1', 'custom-class-2'],
             onOpen: function() {
 
-                timer.stop();
-                timeText = document.querySelector('#timer').innerText;
+                $('.timer').trigger('pause');
+                timeEnd = document.querySelector('.timer-container .timer').innerText;
+                
+                // calculate the diff start end using moment.js
+                const start = moment( timeStart, 'HH:mm:ss');
+                const end   = moment( timeEnd, 'HH:mm:ss');
+                let duration  = moment.duration(start.diff(end));
+                const diff = duration.asSeconds();
 
-                modal.setContent(`<h1>Congratulations! You Won!</h1><p>With ${ stateObj.moves } Moves</p><p>and Stars: ${ stateObj.rating }<p/><p>Time: ${ timeText }</p>`);
+                modal.setContent(`<h1>Congratulations! You Won!</h1><p>With ${ stateObj.moves } Moves</p><p>and Stars: ${ stateObj.rating }<p/><p>Time: ${ diff } seconds </p>`);
 
                 // add a button
                 modal.addFooterBtn('Play Again', 'tingle-btn tingle-btn--primary', function() {
@@ -105,7 +95,6 @@ function shuffle(array) {
                     modal.close();
                 });
 
-                console.log('modal open', timeText);
             },
             onClose: function() {
                 resetFn();
@@ -174,7 +163,7 @@ function shuffle(array) {
                 case 1 : 
                         //1. start timer
                         
-                        timer.start(500);
+                        startTimer();
 
 
                         //2.
@@ -346,8 +335,10 @@ function shuffle(array) {
         function resetFn () {
 
                 // stop timer
-                timer.stop();
-                timerEl.textContent = '';
+                $('.timer').trigger('pause');
+                $('.timer').empty();
+                
+                //timerEl.textContent = '';
 
                 // reset state obj
                 stateObj.moves   = 0;
@@ -384,6 +375,30 @@ function shuffle(array) {
             // open modal
             modal.open();
         };
+
+
+
+        /**
+         * 9. Start Timer
+         */
+        function startTimer () {
+
+            ++stateObj.timerTriggered;
+            
+            //must be triggered only once
+            if (stateObj.timerTriggered === 1) {
+                $('.timer').startTimer({
+                    onComplete: function(){
+                        resetFn();
+                    }
+                });
+            }
+            else {
+                return;
+            }
+
+        };
+        
 
 
         setClickListenerToCards();

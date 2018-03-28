@@ -115,7 +115,10 @@ h1 {
     float: right;
     cursor: pointer;
 }
+    
 
-#timer {
+.timer-container .timer {
     font-size: 30px;
+    display: flex;
 }
+
